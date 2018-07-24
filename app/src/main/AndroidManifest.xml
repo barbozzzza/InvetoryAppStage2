@@ -17,7 +17,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".EditorActivity"
+        <activity
+            android:name=".EditorActivity"
             android:label="@string/editor_activity"
             android:parentActivityName=".CatalogActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->

@@ -5,14 +5,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.support.design.widget.FloatingActionButton;
-
 
 import com.example.android.invetoryapp.data.ProductContract.ProductEntry;
 import com.example.android.invetoryapp.data.ProductDbHelper;
@@ -53,14 +52,14 @@ public class CatalogActivity extends AppCompatActivity {
 
     /**
      * Temporary helper method to display information in the onscreen TextView about the state of
-     * the pets database.
+     * the books database.
      */
     private void displayDatabaseInfo() {
-        Log.e(LOG_TAG,"Database read please wait");
+        Log.e(LOG_TAG, "Database read please wait");
         // Create and/or open a database to read from it
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
-        Log.e(LOG_TAG,"Database read success");
+        Log.e(LOG_TAG, "Database read success");
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
@@ -70,9 +69,9 @@ public class CatalogActivity extends AppCompatActivity {
                 ProductEntry.COLUMN_QUANTITY,
                 ProductEntry.COLUMN_SUPPLIER_NAME,
                 ProductEntry.COLUMN_SUPPLIER_TEL
-                };
+        };
 
-        // Perform a query on the pets table
+        // Perform a query on the books table
         Cursor cursor = db.query(
                 ProductEntry.TABLE_NAME,   // The table to query
                 projection,            // The columns to return
@@ -87,8 +86,8 @@ public class CatalogActivity extends AppCompatActivity {
         try {
             // Create a header in the Text View that looks like this:
             //
-            // The pets table contains <number of rows in Cursor> pets.
-            // _id - name - breed - gender - weight
+            // The books table contains <number of rows in Cursor> books.
+            // _id - name - price - quantity - supplierName - supplierTel
             //
             // In the while loop below, iterate through the rows of the cursor and display
             // the information from each column in this order.
@@ -97,7 +96,7 @@ public class CatalogActivity extends AppCompatActivity {
                     ProductEntry.COLUMN_BOOK_NAME + " - " +
                     ProductEntry.COLUMN_PRICE + " - " +
                     ProductEntry.COLUMN_QUANTITY + " - " +
-                    ProductEntry.COLUMN_SUPPLIER_NAME +" - " +
+                    ProductEntry.COLUMN_SUPPLIER_NAME + " - " +
                     ProductEntry.COLUMN_SUPPLIER_TEL + "\n");
 
             // Figure out the index of each column
@@ -135,14 +134,14 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     /**
-     * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
+     * Helper method to insert hardcoded book data into the database. For debugging purposes only.
      */
-    private void insertPet() {
+    private void insertBook() {
         // Gets the database in write mode
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         // Create a ContentValues object where column names are the keys,
-        // and Toto's pet attributes are the values.
+        // and a singles book attributes are added.
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COLUMN_BOOK_NAME, "Harry Potter");
         values.put(ProductEntry.COLUMN_PRICE, 12.7);
@@ -150,13 +149,13 @@ public class CatalogActivity extends AppCompatActivity {
         values.put(ProductEntry.COLUMN_SUPPLIER_NAME, "J.K. Rowling");
         values.put(ProductEntry.COLUMN_SUPPLIER_TEL, 69985494);
 
-        // Insert a new row for Toto in the database, returning the ID of that new row.
-        // The first argument for db.insert() is the pets table name.
+        // Insert a new row for the book in the database, returning the ID of that new row.
+        // The first argument for db.insert() is the book table name.
         // The second argument provides the name of a column in which the framework
         // can insert NULL in the event that the ContentValues is empty (if
         // this is set to "null", then the framework will not insert a row when
         // there are no values).
-        // The third argument is the ContentValues object containing the info for Toto.
+        // The third argument is the ContentValues object containing the info for the book.
         long newRowId = db.insert(ProductEntry.TABLE_NAME, null, values);
     }
 
@@ -174,7 +173,7 @@ public class CatalogActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
-                insertPet();
+                insertBook();
                 displayDatabaseInfo();
                 return true;
             // Respond to a click on the "Delete all entries" menu option

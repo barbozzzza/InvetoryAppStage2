@@ -3,14 +3,16 @@ package com.example.android.invetoryapp.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.android.invetoryapp.data.ProductContract.ProductEntry;
+
 public class ProductDbHelper extends SQLiteOpenHelper {
 
     public static final String LOG_TAG = ProductDbHelper.class.getSimpleName();
 
-    /** Name of the database file */
+    /**
+     * Name of the database file
+     */
     private static final String DATABASE_NAME = "library.db";
 
     /**
@@ -33,8 +35,8 @@ public class ProductDbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Create a String that contains the SQL statement to create the pets table
-        String SQL_CREATE_PETS_TABLE =  "CREATE TABLE " + ProductEntry.TABLE_NAME + " ("
+        // Create a String that contains the SQL statement to create the book table
+        String SQL_CREATE_BOOK_TABLE = "CREATE TABLE " + ProductEntry.TABLE_NAME + " ("
                 + ProductEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ProductEntry.COLUMN_BOOK_NAME + " TEXT NOT NULL, "
                 + ProductEntry.COLUMN_PRICE + " REAL, "
@@ -42,10 +44,8 @@ public class ProductDbHelper extends SQLiteOpenHelper {
                 + ProductEntry.COLUMN_SUPPLIER_NAME + " TEXT NOT NULL, "
                 + ProductEntry.COLUMN_SUPPLIER_TEL + " INTEGER NOT NULL ); ";
 
-        Log.e("DBHELPER","Creating Table");
         // Execute the SQL statement
-        db.execSQL(SQL_CREATE_PETS_TABLE);
-        Log.e(LOG_TAG,"Table Created");
+        db.execSQL(SQL_CREATE_BOOK_TABLE);
     }
 
     @Override
