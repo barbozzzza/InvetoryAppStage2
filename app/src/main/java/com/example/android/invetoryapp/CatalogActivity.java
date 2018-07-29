@@ -1,9 +1,13 @@
 package com.example.android.invetoryapp;
 
+import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -11,18 +15,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.android.invetoryapp.data.ProductContract.ProductEntry;
-import com.example.android.invetoryapp.data.ProductDbHelper;
 
-public class CatalogActivity extends AppCompatActivity {
+public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = CatalogActivity.class.getSimpleName();
-    /**
-     * Database helper that will provide us access to the database
-     */
-    private ProductDbHelper mDbHelper;
+
+    private static final int PRODUCT_LOADER = 0;
+
+    ProductCursorAdapter mCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,111 +44,52 @@ public class CatalogActivity extends AppCompatActivity {
             }
         });
 
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        mDbHelper = new ProductDbHelper(this);
+        // Find the ListView
+        ListView productListView = findViewById(R.id.list_view_product);
+
+        // Fine the emptyView, set on ListView, so that it only shows when the list has 0 items;
+        View emptyView = findViewById(R.id.empty_view);
+        productListView.setEmptyView(emptyView);
+
+        // Set up and Adapter to create list item
+        mCursorAdapter = new ProductCursorAdapter(this, null);
+        productListView.setAdapter(mCursorAdapter);
+
+        // Setup item click listener
+        productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Create a new intent to go to EditorActivity
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+
+                // Form the content URI that represents the specific product that was clicked on
+                // by appending the id onto {@link ProductEntry#CONTENT_URI}.
+                Uri currentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
+
+                // Set the uri on the data field of intent
+                intent.setData(currentProductUri);
+
+                // Launch the EditorActivity to display the data
+                startActivity(intent);
+            }
+        });
+
+        getLoaderManager().initLoader(PRODUCT_LOADER, null, this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        displayDatabaseInfo();
-    }
-
-    /**
-     * Temporary helper method to display information in the onscreen TextView about the state of
-     * the books database.
-     */
-    private void displayDatabaseInfo() {
-        Log.e(LOG_TAG, "Database read please wait");
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
-        Log.e(LOG_TAG, "Database read success");
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                ProductEntry._ID,
-                ProductEntry.COLUMN_BOOK_NAME,
-                ProductEntry.COLUMN_PRICE,
-                ProductEntry.COLUMN_QUANTITY,
-                ProductEntry.COLUMN_SUPPLIER_NAME,
-                ProductEntry.COLUMN_SUPPLIER_TEL
-        };
-
-        // Perform a query on the books table
-        Cursor cursor = db.query(
-                ProductEntry.TABLE_NAME,   // The table to query
-                projection,            // The columns to return
-                null,                  // The columns for the WHERE clause
-                null,                  // The values for the WHERE clause
-                null,                  // Don't group the rows
-                null,                  // Don't filter by row groups
-                null);                   // The sort order
-
-        TextView displayView = (TextView) findViewById(R.id.text_view_product);
-
-        try {
-            // Create a header in the Text View that looks like this:
-            //
-            // The books table contains <number of rows in Cursor> books.
-            // _id - name - price - quantity - supplierName - supplierTel
-            //
-            // In the while loop below, iterate through the rows of the cursor and display
-            // the information from each column in this order.
-            displayView.setText("The book table contains " + cursor.getCount() + " books.\n\n");
-            displayView.append(ProductEntry._ID + " - " +
-                    ProductEntry.COLUMN_BOOK_NAME + " - " +
-                    ProductEntry.COLUMN_PRICE + " - " +
-                    ProductEntry.COLUMN_QUANTITY + " - " +
-                    ProductEntry.COLUMN_SUPPLIER_NAME + " - " +
-                    ProductEntry.COLUMN_SUPPLIER_TEL + "\n");
-
-            // Figure out the index of each column
-            int idColumnIndex = cursor.getColumnIndex(ProductEntry._ID);
-            int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_BOOK_NAME);
-            int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_QUANTITY);
-            int supplierNameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_SUPPLIER_NAME);
-            int supplierTelColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_SUPPLIER_TEL);
-
-            // Iterate through all the returned rows in the cursor
-            while (cursor.moveToNext()) {
-                // Use that index to extract the String or Int value of the word
-                // at the current row the cursor is on.
-                int currentID = cursor.getInt(idColumnIndex);
-                String currentName = cursor.getString(nameColumnIndex);
-                float currentPrice = cursor.getFloat(priceColumnIndex);
-                int currentQuantity = cursor.getInt(quantityColumnIndex);
-                String currentSupplierName = cursor.getString(supplierNameColumnIndex);
-                int currentSupplierTel = cursor.getInt(supplierTelColumnIndex);
-
-                // Display the values from each column of the current row in the cursor in the TextView
-                displayView.append(("\n" + currentID + " - " +
-                        currentName + " - " +
-                        currentPrice + " - " +
-                        currentQuantity + " - " +
-                        currentSupplierName + " - " +
-                        currentSupplierTel));
-            }
-        } finally {
-            // Always close the cursor when you're done reading from it. This releases all its
-            // resources and makes it invalid.
-            cursor.close();
-        }
     }
 
     /**
      * Helper method to insert hardcoded book data into the database. For debugging purposes only.
      */
     private void insertBook() {
-        // Gets the database in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
         // Create a ContentValues object where column names are the keys,
         // and a singles book attributes are added.
         ContentValues values = new ContentValues();
-        values.put(ProductEntry.COLUMN_BOOK_NAME, "Harry Potter");
+        values.put(ProductEntry.COLUMN_PRODUCT_NAME, "Harry Potter");
         values.put(ProductEntry.COLUMN_PRICE, 12.7);
         values.put(ProductEntry.COLUMN_QUANTITY, 5);
         values.put(ProductEntry.COLUMN_SUPPLIER_NAME, "J.K. Rowling");
@@ -156,7 +102,15 @@ public class CatalogActivity extends AppCompatActivity {
         // this is set to "null", then the framework will not insert a row when
         // there are no values).
         // The third argument is the ContentValues object containing the info for the book.
-        long newRowId = db.insert(ProductEntry.TABLE_NAME, null, values);
+        Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
+    }
+
+    /**
+     * Helper method to delete all products in the database.
+     */
+    private void deleteAllProducts() {
+        int rowsDeleted = getContentResolver().delete(ProductEntry.CONTENT_URI, null, null);
+        Log.v(LOG_TAG, rowsDeleted + " rows deleted from product database");
     }
 
     @Override
@@ -174,14 +128,59 @@ public class CatalogActivity extends AppCompatActivity {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
                 insertBook();
-                displayDatabaseInfo();
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                // Do nothing for now
+                deleteAllProducts();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Define a projection that specifies the columns from the table we care about
+        String[] projection = {
+                ProductEntry._ID,
+                ProductEntry.COLUMN_PRODUCT_NAME,
+                ProductEntry.COLUMN_PRICE,
+                ProductEntry.COLUMN_QUANTITY,
+                ProductEntry.COLUMN_SUPPLIER_NAME,
+                ProductEntry.COLUMN_SUPPLIER_TEL
+        };
+
+        // This loader will execute the ContentProvider's query method on a background thread
+        return new CursorLoader(this,
+                ProductEntry.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader loader, Cursor data) {
+        // Update with this new cursor containing updated ped data
+        mCursorAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+        mCursorAdapter.swapCursor(null);
+    }
+
+    // Inspired by
+    // https://github.com/Muneera-Salah/Inventory-App-Stage-2/blob/master/app/src/main/java/com/example/anrdoid/inventoryappstage2/InventoryActivity.java
+    public void sale(Integer productID, Integer productQuantity) {
+        productQuantity = productQuantity - 1;
+        if (productQuantity >= 0) {
+            ContentValues values = new ContentValues();
+            values.put(ProductEntry.COLUMN_QUANTITY, productQuantity);
+            Uri updateUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, productID);
+            int rowsAffected = getContentResolver().update(updateUri, values, null, null);
+            Toast.makeText(this, "Sale Succeeded", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Product out of Stock", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

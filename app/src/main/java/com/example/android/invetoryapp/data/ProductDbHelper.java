@@ -25,7 +25,7 @@ public class ProductDbHelper extends SQLiteOpenHelper {
      *
      * @param context of the app
      */
-    public ProductDbHelper(Context context) {
+    ProductDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -38,7 +38,7 @@ public class ProductDbHelper extends SQLiteOpenHelper {
         // Create a String that contains the SQL statement to create the book table
         String SQL_CREATE_BOOK_TABLE = "CREATE TABLE " + ProductEntry.TABLE_NAME + " ("
                 + ProductEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + ProductEntry.COLUMN_BOOK_NAME + " TEXT NOT NULL, "
+                + ProductEntry.COLUMN_PRODUCT_NAME + " TEXT NOT NULL, "
                 + ProductEntry.COLUMN_PRICE + " REAL, "
                 + ProductEntry.COLUMN_QUANTITY + " INTEGER NOT NULL, "
                 + ProductEntry.COLUMN_SUPPLIER_NAME + " TEXT NOT NULL, "

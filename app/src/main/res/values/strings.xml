@@ -40,7 +40,37 @@
 
     <!-- Text hint for supplier tel field in the editor [CHAR LIMIT=9] -->
     <string name="hint_supplier_tel">Supplier Telephone</string>
+    <!--
+        <string name="tel_not_available">Phone not available</string>
+    -->
+    <string name="empty_view_title_text">Inventory is empty…</string>
+    <string name="empty_view_subtitle_text">Get started by adding a product</string>
+    <string name="editor_insert_product_failed">Error with inserting product</string>
+    <string name="editor_insert_product_successful">Product Inserted</string>
+    <string name="editor_update_product_failed">Error with updating product</string>
+    <string name="editor_update_product_successful">Product Updated</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep editing</string>
 
+    !-- Dialog message when user is leaving editor but hasn't saved changes [CHAR LIMIT=NONE] -->
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+    <string name="editor_activity_title_new_product">Add a product</string>
+    <string name="editor_activity_title_edit_product">Edit product</string>
+    <string name="delete_dialog_msg">Delete this product?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="editor_delete_product_failed">Error with deleting product</string>
+    <string name="editor_delete_product_successful">Product deleted</string>
+    <string name="product_name_required">Product name required</string>
+    <string name="product_price_required">Product price required</string>
+    <string name="product_supplier_name_required">Supplier name required</string>
+    <string name="product_supplier_tel_required">Supplier Tel required</string>
+    <string name="product_quantity_positive">Quantity must be zero or positive</string>
+    <string name="edit_hint_box">Press save button after modifying the Product</string>
+    <string name="edit_hint_box_buttons">Buttons just modify the fields,not saving in database</string>
+    <string name="add_quantity">Quantity +1</string>
+    <string name="remove_quantity">Quantity -1</string>
+    <string name="order">Order</string>
 
 
 </resources>

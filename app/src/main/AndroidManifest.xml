@@ -19,13 +19,17 @@
 
         <activity
             android:name=".EditorActivity"
-            android:label="@string/editor_activity"
             android:parentActivityName=".CatalogActivity">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".CatalogActivity" />
         </activity>
+
+        <provider
+            android:name=".data.ProductProvider"
+            android:authorities="com.example.android.invetoryapp"
+            android:exported="false" />
     </application>
 
 </manifest>
